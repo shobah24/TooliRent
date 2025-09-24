@@ -1,0 +1,44 @@
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using TooliRent.Domain.Models;
+
+namespace TooliRent.Infrastructure.Data
+{
+    public class TooliRentDbContext : IdentityDbContext<User>
+    {
+        public TooliRentDbContext(DbContextOptions options) : base(options)
+        {
+        }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Tool> Tools { get; set; }
+        public DbSet<Category> Categories { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Role Seeds
+
+            builder.Entity<Tool>()
+               .HasOne(t => t.Category)
+                .WithMany(c => c.Tools)
+                .HasForeignKey(t => t.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Booking>()
+                .HasOne(b => b.User)
+                .WithMany(u => u.Bookings)
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Booking>()
+                .HasOne(b => b.Tool)
+                .WithMany(t => t.Bookings)
+                .HasForeignKey(b => b.ToolId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
+        }
+    }
+}
