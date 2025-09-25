@@ -31,9 +31,11 @@ namespace TooliRent_project
 
             // Repository pattern
             builder.Services.AddScoped<IToolRepository, ToolRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             // Service pattern
             builder.Services.AddScoped<IToolService, ToolService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
             //builder.Services.AddScoped<IService, Service>();
 
             // FluentValidation
@@ -42,6 +44,11 @@ namespace TooliRent_project
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddFluentValidationClientsideAdapters();
             builder.Services.AddValidatorsFromAssemblyContaining<CreateToolDtoValidator>();
+
+            builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UpdateCategoryDtoValidator>();
+
 
 
 
