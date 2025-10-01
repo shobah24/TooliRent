@@ -47,7 +47,19 @@ namespace TooliRent.Application.Services
         public async Task<LoginDtoResponse> LoginAsync(LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+            //if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+            //{
+            //    throw new Exception("Felaktigt användarnamn eller lösenord.");
+            //}
+            if (user is null)
+            {
+                throw new Exception("Felaktigt användarnamn eller lösenord.");
+            }
+            if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.Now)
+            {
+                throw new Exception("Användaren är inaktiverad.");
+            }
+            if (!await _userManager.CheckPasswordAsync(user, dto.Password))
             {
                 throw new Exception("Felaktigt användarnamn eller lösenord.");
             }
@@ -91,6 +103,26 @@ namespace TooliRent.Application.Services
                 RefreshToken = newRefreshToken,
                 ExpiresAt = DateTime.Now.AddMinutes(60)
             };
+        }
+        public async Task DeActivateUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+            {
+                throw new Exception("Användaren hittades inte.");
+            }
+            user.LockoutEnd = DateTimeOffset.MaxValue;
+            await _userManager.UpdateAsync(user);
+        }
+        public async Task ActivateUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+            {
+                throw new KeyNotFoundException($"Användare med ID {userId} hittades inte.");
+            }
+            user.LockoutEnd = null;
+            await _userManager.UpdateAsync(user);
         }
 
 
