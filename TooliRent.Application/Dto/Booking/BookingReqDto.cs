@@ -2,7 +2,7 @@
 {
     public class BookingReqDto
     {
-        public int ToolId { get; set; }
+        public IEnumerable<int> ToolId { get; set; } = new List<int>();
         public DateTime LoanDate { get; set; }
         public DateTime ReturnDate { get; set; }
     }
