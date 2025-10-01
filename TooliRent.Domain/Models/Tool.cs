@@ -13,6 +13,7 @@ namespace TooliRent.Domain.Models
         public ToolStatus Status { get; set; } = ToolStatus.Available;
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<BookingTool> BookingTools { get; set; } = new List<BookingTool>();
 
     }
 }
