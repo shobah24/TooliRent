@@ -8,6 +8,7 @@ namespace TooliRent_project.Controllers
     //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ToolsController : ControllerBase
     {
         private readonly IToolService _service;
@@ -17,16 +18,16 @@ namespace TooliRent_project.Controllers
             _service = service;
         }
 
-        // GET: api/tools
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ToolDto>>> GetAllTools()
         {
             var tools = await _service.GetAllToolAsync();
             return Ok(tools);
         }
 
-        // GET: api/tools/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(ToolDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ToolDto>> GetToolById(int id)
@@ -39,8 +40,8 @@ namespace TooliRent_project.Controllers
             return Ok(tool);
         }
 
-        // GET: api/tools/available
         [HttpGet("available")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(ToolDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<ToolDto>>> GetAvailableTools()
@@ -49,8 +50,8 @@ namespace TooliRent_project.Controllers
             return Ok(tools);
         }
 
-        // GET: api/tools/category/1
         [HttpGet("category/{categoryId}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(ToolDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<ToolDto>>> GetToolsByCategory(int categoryId)
@@ -63,8 +64,8 @@ namespace TooliRent_project.Controllers
             return Ok(tools);
         }
 
-        // GET: api/tools/filter?status=Available&categoryId=1
         [HttpGet("filter")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ToolDto>>> FilterTool([FromQuery] string status, [FromQuery] int? categoryId)
         {
             var tools = await _service.FilterToolAsync(status, categoryId);
@@ -75,9 +76,8 @@ namespace TooliRent_project.Controllers
             return Ok(tools);
         }
 
-        // POST: api/tools
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(ToolDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ToolDto>> CreateTool([FromBody] CreateToolDto dto)
@@ -86,9 +86,8 @@ namespace TooliRent_project.Controllers
             return CreatedAtAction(nameof(GetToolById), new { id = tool.Id }, tool);
         }
 
-        // PUT: api/tools/5
         [HttpPut("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(ToolDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ToolDto>> UpdateTool(int id, [FromBody] UpdateToolDto dto)
@@ -97,9 +96,8 @@ namespace TooliRent_project.Controllers
             return Ok(tool);
         }
 
-        // DELETE: api/tools/5
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteTool(int id)
         {
             var deleted = await _service.DeleteToolAsync(id);

@@ -12,12 +12,14 @@ namespace TooliRent.Infrastructure.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Tool> Tools { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<BookingTool> BookingTools { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Role Seeds
 
             builder.Entity<Tool>()
                .HasOne(t => t.Category)
@@ -31,10 +33,26 @@ namespace TooliRent.Infrastructure.Data
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Booking>()
-                .HasOne(b => b.Tool)
-                .WithMany(t => t.Bookings)
-                .HasForeignKey(b => b.ToolId)
+            //builder.Entity<Booking>()
+            //    .HasOne(b => b.Tool)
+            //    .WithMany(t => t.Bookings)
+            //    .HasForeignKey(b => b.ToolId)
+            //    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<BookingTool>()
+            .HasKey(bt => new { bt.BookingId, bt.ToolId });
+
+            builder.Entity<BookingTool>()
+                .HasOne(bt => bt.Booking)
+                .WithMany(b => b.BookingTools)
+                .HasForeignKey(bt => bt.BookingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            builder.Entity<BookingTool>()
+                .HasOne(bt => bt.Tool)
+                .WithMany(t => t.BookingTools)
+                .HasForeignKey(bt => bt.ToolId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 

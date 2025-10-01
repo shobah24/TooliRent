@@ -15,6 +15,7 @@
             Pending,
             Booked,
             Loaned,
+            Active,
             Returned,
             Cancelled,
             Late
