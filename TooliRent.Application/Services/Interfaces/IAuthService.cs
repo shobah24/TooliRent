@@ -8,5 +8,8 @@ namespace TooliRent.Application.Services.Interfaces
         Task<LoginDtoResponse> RegisterAsync(RegisterDto dto);
         Task<TokenRefreshResponseDto> RefreshTokenAsync(TokenRefreshDto dto);
         Task<bool> RevokeTokenAsync(string refreshToken);
+
+        Task DeActivateUserAsync(string userId);
+        Task ActivateUserAsync(string userId);
     }
 }

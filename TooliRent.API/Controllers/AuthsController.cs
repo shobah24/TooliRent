@@ -51,6 +51,34 @@ namespace TooliRent.API.Controllers
             var result = await _authService.RefreshTokenAsync(dto);
             return Ok(result);
         }
+        [HttpPatch("Auth/{id}/deactivate")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> DeactivateUser(string id)
+        {
+            try
+            {
+                await _authService.DeActivateUserAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+        [HttpPatch("Auth/{id}/activate")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> ActivateUser(string id)
+        {
+            try
+            {
+                await _authService.ActivateUserAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
 
         [HttpPost("revoke")]
         public async Task<ActionResult> Revoke(TokenRefreshDto dto)
