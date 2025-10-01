@@ -2,6 +2,7 @@
 using TooliRent.Domain.Models;
 using TooliRent.Application.Dto.Tool;
 using TooliRent.Application.Dto.Category;
+using TooliRent.Application.Dto.Booking;
 
 namespace TooliRent.Application.Mapping
 {
@@ -26,6 +27,21 @@ namespace TooliRent.Application.Mapping
             CreateMap<Category, CategoryWithoutToolsDtos>();
             CreateMap<CreateCategoryDto, Category>();
             CreateMap<UpdateCategoryDto, Category>();
+
+            // Booking mapping
+            CreateMap<Booking, BookingResponseDto>()
+            .ForMember(dest => dest.ToolName,
+             opt => opt.MapFrom(src => src.BookingTools
+            .Where(bt => bt.Tool != null)
+            .Select(bt => bt.Tool.Name)))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+            CreateMap<BookingReqDto, Booking>()
+                .ForMember(dest => dest.BookingTools, opt => opt.Ignore());
+
+            CreateMap<UpdateBookingDto, Booking>()
+                .ForMember(dest => dest.BookingTools, opt => opt.Ignore());
+
 
 
         }
