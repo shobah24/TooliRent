@@ -16,6 +16,7 @@ using TooliRent.Application.Mapping;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
+using System.Security.Claims;
 
 namespace TooliRent_project
 {
@@ -32,22 +33,33 @@ namespace TooliRent_project
             // Repository pattern
             builder.Services.AddScoped<IToolRepository, ToolRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
 
             // Service pattern
             builder.Services.AddScoped<IToolService, ToolService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
             //builder.Services.AddScoped<IService, Service>();
 
             // FluentValidation
-            //builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
-            //builder.Services.AddValidatorsFromAssemblyContaining<CreateToolDtoValidator>();
-            builder.Services.AddFluentValidationAutoValidation();
-            builder.Services.AddFluentValidationClientsideAdapters();
+            builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             builder.Services.AddValidatorsFromAssemblyContaining<CreateToolDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UpdateToolDtoValidator>();
+            //builder.Services.AddValidatorsFromAssemblyContaining<CreateToolDtoValidator>();
+            //builder.Services.AddFluentValidationAutoValidation();
+            //builder.Services.AddFluentValidationClientsideAdapters();
+
 
             builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryDtoValidator>();
             builder.Services.AddValidatorsFromAssemblyContaining<UpdateCategoryDtoValidator>();
+
+            builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+            builder.Services.AddValidatorsFromAssemblyContaining<BookingReqDtoValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UpdateBookingDtoValidator>();
 
 
 
@@ -62,7 +74,7 @@ namespace TooliRent_project
                 o.User.RequireUniqueEmail = true;
                 o.Password.RequiredLength = 8;
             })
-                //.AddRoles<IdentityRole>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<TooliRentDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -70,9 +82,14 @@ namespace TooliRent_project
             var jwt = builder.Configuration.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
 
-            builder.Services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(o =>
+            //builder.Services
+            //    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            builder.Services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+              .AddJwtBearer(o =>
                 {
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -83,7 +100,11 @@ namespace TooliRent_project
                         ValidIssuer = jwt["Issuer"],
                         ValidAudience = jwt["Audience"],
                         IssuerSigningKey = key,
-                        ClockSkew = TimeSpan.FromMinutes(1)
+                        //ClockSkew = TimeSpan.FromMinutes(1)
+                        ClockSkew = TimeSpan.Zero,
+
+                        RoleClaimType = ClaimTypes.Role,
+                        NameClaimType = ClaimTypes.NameIdentifier
                     };
                 });
             // Add services to the container.
@@ -98,9 +119,12 @@ namespace TooliRent_project
             //builder.Services.AddSwaggerGen();
 
             // extraa 
-            builder.Services.AddSwaggerGen(o =>
+            builder.Services.AddSwaggerGen(c =>
             {
-                o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TooliRent", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
                     Type = SecuritySchemeType.Http,
@@ -109,7 +133,7 @@ namespace TooliRent_project
                     In = ParameterLocation.Header,
                     Description = "Ange din token"
                 });
-                o.AddSecurityRequirement(new OpenApiSecurityRequirement
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -134,15 +158,10 @@ namespace TooliRent_project
             {
                 var services = scope.ServiceProvider;
 
-
                 await UserSeedData.SeedRolesAndAdminAsync(services);
 
                 await ToolAndRentSeed.SeedCategoriesAndToolsAsync(services);
             }
-
-
-
-
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -152,6 +171,7 @@ namespace TooliRent_project
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
