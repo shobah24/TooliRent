@@ -41,6 +41,19 @@ namespace TooliRent.Application.Services
             return _mapper.Map<IEnumerable<BookingResponseDto>>(bookings);
 
         }
+        public async Task<BookingStatsDto> GetBookingStatsAsync()
+        {
+            var bookings = await _repo.GetAllBookingsAsync();
+
+            return new BookingStatsDto
+            {
+                Total = bookings.Count(),
+                Pending = bookings.Count(b => b.Status == BookingStatus.Pending),
+                Active = bookings.Count(b => b.Status == BookingStatus.Active),
+                Returned = bookings.Count(b => b.Status == BookingStatus.Returned),
+                Late = bookings.Count(b => b.Status == BookingStatus.Late)
+            };
+        }
         public async Task<BookingResponseDto> CreateBookingAsync(BookingReqDto dto, string userId)
         {
             var booking = new Booking
