@@ -17,7 +17,7 @@ namespace TooliRent.Infrastructure.Data
                 var cat2 = new Category { Name = "Elektriskt" };
                 var cat3 = new Category { Name = "Mätinstrument" };
 
-                db.Categories.AddRange(cat1, cat2, cat3); 
+                db.Categories.AddRange(cat1, cat2, cat3);
 
                 db.Tools.AddRange(
                     new Tool
@@ -93,28 +93,30 @@ namespace TooliRent.Infrastructure.Data
                     throw new Exception("Verktyg kan inte hittas.");
                 }
 
-                db.Bookings.AddRange(
-                    new Booking
-                    {
-                        UserId = user.Id,
-                        ToolId = borrmaskin.Id,
-                        LoanDate = DateTime.Today.AddDays(-2),
-                        ReturnDate = DateTime.Today.AddDays(1),
-                        Status = BookingStatus.Loaned,
-                        PickupDate = DateTime.Today.AddDays(-2),
-                        ReturnedDate = DateTime.MinValue
-                    },
-                    new Booking
-                    {
-                        UserId = user.Id,
-                        ToolId = hammare.Id,
-                        LoanDate = DateTime.Today,
-                        ReturnDate = DateTime.Today.AddDays(3),
-                        Status = BookingStatus.Pending,
-                        PickupDate = DateTime.MinValue,
-                        ReturnedDate = DateTime.MinValue
-                    }
-                 );
+                var booking1 = new Booking
+                {
+                    UserId = user.Id,
+                    //ToolId = borrmaskin.Id,
+                    LoanDate = DateTime.Today.AddDays(-2),
+                    ReturnDate = DateTime.Today.AddDays(1),
+                    Status = BookingStatus.Loaned,
+                    PickupDate = DateTime.Today.AddDays(-2),
+                    ReturnedDate = DateTime.MinValue
+                };
+                booking1.BookingTools.Add(new BookingTool { ToolId = borrmaskin.Id, Booking = booking1 });
+
+                var booking2 = new Booking
+                {
+                    UserId = user.Id,
+                    //ToolId = hammare.Id,
+                    LoanDate = DateTime.Today,
+                    ReturnDate = DateTime.Today.AddDays(3),
+                    Status = BookingStatus.Pending,
+                    PickupDate = DateTime.MinValue,
+                    ReturnedDate = DateTime.MinValue
+                };
+                booking2.BookingTools.Add(new BookingTool { ToolId = hammare.Id, Booking = booking2 });
+                db.Bookings.AddRange(booking1, booking2);
 
                 await db.SaveChangesAsync();
             }

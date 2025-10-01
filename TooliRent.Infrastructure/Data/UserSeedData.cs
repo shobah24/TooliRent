@@ -19,7 +19,7 @@ namespace TooliRent.Infrastructure.Data
                     await roleManager.CreateAsync(new IdentityRole(role));
             }
 
-            // Admin user
+            // Admin
             var adminEmail = "admin@toolirent.local";
             if (await userManager.FindByEmailAsync(adminEmail) == null)
             {
@@ -29,12 +29,11 @@ namespace TooliRent.Infrastructure.Data
                     Email = adminEmail,
                     EmailConfirmed = true
                 };
-                var result = await userManager.CreateAsync(admin, "Admin123!");
-                if (result.Succeeded)
-                    await userManager.AddToRoleAsync(admin, "Admin");
+                await userManager.CreateAsync(admin, "Admin123!");
+                await userManager.AddToRoleAsync(admin, "Admin");
             }
 
-            // Member user
+            // Member
             var memberEmail = "member@toolirent.local";
             if (await userManager.FindByEmailAsync(memberEmail) == null)
             {
@@ -44,11 +43,9 @@ namespace TooliRent.Infrastructure.Data
                     Email = memberEmail,
                     EmailConfirmed = true
                 };
-                var result = await userManager.CreateAsync(member, "Member123!");
-                if (result.Succeeded)
-                    await userManager.AddToRoleAsync(member, "Member");
+                await userManager.CreateAsync(member, "Member123!");
+                await userManager.AddToRoleAsync(member, "Member");
             }
-
         }
     }
 }

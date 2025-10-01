@@ -53,7 +53,6 @@ namespace TooliRent.Infrastructure.Repositories
             await _context.Tools.AddAsync(tool);
             await _context.SaveChangesAsync();
         }
-        //kolla upp igen
         public async Task<IEnumerable<Tool>> FilterToolAsync(Status.ToolStatus status, int? categoryId)
         {
             var query = _context.Tools.AsQueryable();
@@ -61,7 +60,9 @@ namespace TooliRent.Infrastructure.Repositories
             query = query.Where(t => t.Status == status);
 
             if (categoryId != null)
+            { 
                 query = query.Where(t => t.CategoryId == categoryId);
+            }
 
             return await query
                 .Include(t => t.Category)
