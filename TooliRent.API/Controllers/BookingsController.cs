@@ -61,7 +61,16 @@ namespace TooliRent.API.Controllers
             var bookings = await _service.GetBookingsByUserIdAsync(userId);
             return Ok(bookings);
         }
-       
+        [HttpGet("Overall-stats")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(BookingStatsDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<BookingStatsDto>> GetBookingStats()
+        {
+            var stats = await _service.GetBookingStatsAsync();
+            return Ok(stats);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin, Member")]
         [ProducesResponseType(typeof(BookingResponseDto), StatusCodes.Status201Created)]
