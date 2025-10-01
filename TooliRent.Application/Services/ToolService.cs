@@ -47,7 +47,9 @@ namespace TooliRent.Application.Services
         {
             var tool = _mapper.Map<Tool>(dto);
             await _repo.AddToolAsync(tool);
-            return _mapper.Map<ToolDto>(tool);
+
+            var createdTool = await _repo.GetToolByIdAsync(tool.Id);
+            return _mapper.Map<ToolDto>(createdTool);
         }
 
         public async Task<ToolDto?> UpdateToolAsync(int id, UpdateToolDto dto)
@@ -60,7 +62,6 @@ namespace TooliRent.Application.Services
             _mapper.Map(dto, tool);
             await _repo.UpdateToolAsync(tool);
 
-            //return _mapper.Map<ToolDto>(tool);
             var updatedTool = await _repo.GetToolByIdAsync(id);
             return _mapper.Map<ToolDto>(updatedTool);
         }
