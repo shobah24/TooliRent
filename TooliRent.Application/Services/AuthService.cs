@@ -24,10 +24,10 @@ namespace TooliRent.Application.Services
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
             {
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new KeyNotFoundException(string.Join(", ", result.Errors.Select(e => e.Description)));
             }
 
-            var role = string.IsNullOrWhiteSpace(dto.Role) ? "Member" : dto.Role;  // kkkk
+            var role = string.IsNullOrWhiteSpace(dto.Role) ? "Member" : dto.Role; 
             await _userManager.AddToRoleAsync(user, role);
 
             var token = await _jwtService.GenerateJwtToken(user);
@@ -53,15 +53,15 @@ namespace TooliRent.Application.Services
             //}
             if (user is null)
             {
-                throw new Exception("Felaktigt användarnamn eller lösenord.");
+                throw new KeyNotFoundException("Felaktigt användarnamn eller lösenord.");
             }
             if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.Now)
             {
-                throw new Exception("Användaren är inaktiverad.");
+                throw new KeyNotFoundException("Användaren är inaktiverad.");
             }
             if (!await _userManager.CheckPasswordAsync(user, dto.Password))
             {
-                throw new Exception("Felaktigt användarnamn eller lösenord.");
+                throw new KeyNotFoundException("Felaktigt användarnamn eller lösenord.");
             }
 
             var token = await _jwtService.GenerateJwtToken(user);

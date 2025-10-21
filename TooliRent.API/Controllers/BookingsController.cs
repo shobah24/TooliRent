@@ -52,12 +52,18 @@ namespace TooliRent.API.Controllers
             return Ok(bookings);
         }
         
-        [HttpGet("user/{userId}")]
+        [HttpGet("user/")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(BookingResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<BookingResponseDto>>> GetBookingsByUserId(string userId)
+        public async Task<ActionResult<IEnumerable<BookingResponseDto>>> GetBookingsByUserId()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return NotFound("User id invalid");
+            }
             var bookings = await _service.GetBookingsByUserIdAsync(userId);
             return Ok(bookings);
         }

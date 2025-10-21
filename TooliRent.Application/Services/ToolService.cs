@@ -82,7 +82,9 @@ namespace TooliRent.Application.Services
         public async Task<IEnumerable<ToolDto>> FilterToolAsync(string status, int? categoryId)
         {
             if (!Enum.TryParse(status, true, out ToolStatus parsedStatus))
+            {
                 throw new ArgumentException("Ogiltig status");
+            }
 
             var tools = await _repo.FilterToolAsync(parsedStatus, categoryId);
             return _mapper.Map<IEnumerable<ToolDto>>(tools);
