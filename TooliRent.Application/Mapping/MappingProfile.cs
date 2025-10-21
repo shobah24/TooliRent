@@ -40,7 +40,9 @@ namespace TooliRent.Application.Mapping
                 .ForMember(dest => dest.BookingTools, opt => opt.Ignore());
 
             CreateMap<UpdateBookingDto, Booking>()
-                .ForMember(dest => dest.BookingTools, opt => opt.Ignore());
+                //.ForMember(dest => dest.BookingTools, opt => opt.Ignore());
+                .ForMember(dest => dest.BookingTools, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
 
 

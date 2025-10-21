@@ -92,24 +92,28 @@ namespace TooliRent.Application.Services
                     booking.BookingTools.Add(new BookingTool { ToolId = toolId, Booking = booking });
                 }
 
-                var toRemove = booking.BookingTools.Where(bt => !dto.ToolId.Contains(bt.ToolId)).ToList();
+                var toRemove = booking.BookingTools
+                    .Where(bt => !dto.ToolId.Contains(bt.ToolId))
+                    .ToList();
                 foreach (var bt in toRemove)
                 {
                     booking.BookingTools.Remove(bt);
                 }
             }
-            if (dto.LoanDate.HasValue)
-            {
-                booking.LoanDate = dto.LoanDate.Value;
-            }
-            if (dto.ReturnDate.HasValue)
-            {
-                booking.ReturnDate = dto.ReturnDate.Value;
-            }
-            if (dto.Status.HasValue)
-            {
-                booking.Status = dto.Status.Value;
-            }
+            //if (dto.LoanDate.HasValue)
+            //{
+            //    booking.LoanDate = dto.LoanDate.Value;
+            //}
+            //if (dto.ReturnDate.HasValue)
+            //{
+            //    booking.ReturnDate = dto.ReturnDate.Value;
+            //}
+            //if (dto.Status.HasValue)
+            //{
+            //    booking.Status = dto.Status.Value;
+            //}
+            
+            _mapper.Map(dto, booking);
 
             await _repo.UpdateBookingAsync(booking);
             return _mapper.Map<BookingResponseDto>(booking);

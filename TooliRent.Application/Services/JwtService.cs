@@ -26,7 +26,7 @@ namespace TooliRent.Application.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var roles = await _userManager.GetRolesAsync(user);           // <-- fetch roles
+            var roles = await _userManager.GetRolesAsync(user); 
             var roleClaims = roles.Select(r => new Claim(ClaimTypes.Role, r));
 
             var claims = new List<Claim>
